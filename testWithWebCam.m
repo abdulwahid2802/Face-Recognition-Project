@@ -1,0 +1,30 @@
+close all
+clear 
+load('trainedModel.mat');
+cam = webcam('FaceTime HD Camera');
+
+faceDetector = vision.CascadeObjectDetector();
+
+figure,
+
+while (1)
+    
+    faceImg = snapshot(cam);
+    bbox= step(faceDetector, faceImg);
+    if (size(bbox,1)> 0)
+        ImageOut = faceImg;
+        for l=1 : size(bbox,1)
+            img= imcrop(faceImg,bbox(l,:));
+            img = imresize(img,[256 256]);
+            faceGray = rgb2gray(img);
+            Features = extractHOGFeatures(faceGray);
+            [label,score] = predict(Mdl,Features);
+
+            ImageOut = insertObjectAnnotation(ImageOut,'rectangle',bbox(l,:),label);
+        end
+        imshow(ImageOut);
+        fprintf('%f   %f\n',score(1,1),score(1,2));
+        drawnow();
+    end
+end
+
