@@ -17,13 +17,14 @@ while (1)
             img= imcrop(faceImg,bbox(l,:));
             img = imresize(img,[256 256]);
             faceGray = rgb2gray(img);
-            Features = extractHOGFeatures(faceGray);
+            Features = extractHOGFeatures(faceGray, 'cellSize', [32 32]);
             [label,score] = predict(Mdl,Features);
 
             ImageOut = insertObjectAnnotation(ImageOut,'rectangle',bbox(l,:),label);
         end
         imshow(ImageOut);
-        fprintf('%f   %f\n',score(1,1),score(1,2));
+        
+        fprintf('%f \t%f \t%s\n',score(1,1),score(1,2), label{:});
         drawnow();
     end
 end

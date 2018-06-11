@@ -3,16 +3,21 @@ clear
 
 Database = dir ('/Users/mac/Documents/MATLAB/Dataset');
 
-Features = zeros(1,34596);
+Features = zeros(1,1764);
 labels = { };
 k = 1;
 for i = 3 : length(Database)
     PersonF = dir (strcat('/Users/mac/Documents/MATLAB/Dataset/',Database(i).name));
     for j = 3 : length(PersonF)
         faceImg = imread(strcat('/Users/mac/Documents/MATLAB/Dataset/',Database(i).name, '/' , PersonF(j).name));
+        faceImg = imresize(faceImg,[256 256]);
+        [r,c,p]=size(faceImg);
+        if (p~=1)
         faceGray = rgb2gray(faceImg);
-        Features(k,:) = extractHOGFeatures(faceGray);
+        end
+        Features(k,:) = extractHOGFeatures(faceGray, 'cellSize', [32 32]);
         labels{k} =  Database(i).name;
+        
         k=k+1;
     end
 end
@@ -32,5 +37,11 @@ Mdl = fitcecoc(Features,labels);
 % end
 % 
 % 
-% FeatureTableAndLabel = [array2table(Features) cell2table(labels')];
+FeatureTableAndLabel = [array2table(Features) cell2table(labels')];
+% figure;
+% imshow(faceImg);
+% hold on;
+% plot(hoVis);
+
+
 
